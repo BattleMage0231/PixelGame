@@ -13,7 +13,7 @@ find_package(glm CONFIG REQUIRED)
 
 add_executable(game 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/other.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/game.cc
 )
 
 target_include_directories(game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

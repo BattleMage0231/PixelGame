@@ -1,7 +1,18 @@
 #include <iostream>
-#include "other.h"
+#include <memory>
+#include <SDL.h>
+
+#include "game.h"
 
 int main(int argc, char* argv[]) {
-    std::cout << get() << std::endl;
+    if(SDL_Init(SDL_INIT_EVERYTHING)) {
+        std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
+        return -1;
+    }
+
+    std::unique_ptr<Game> g(new Game());
+    g->launch();
+
+    SDL_Quit();
     return 0;
 }
