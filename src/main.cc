@@ -3,6 +3,7 @@
 #include <SDL.h>
 
 #include "game.h"
+#include "map.h"
 
 int main(int argc, char* argv[]) {
     if(SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -10,8 +11,8 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    std::unique_ptr<Game> g(new Game());
-    g->launch();
+    Game g;
+    g.launch();
 
     SDL_Quit();
     return 0;

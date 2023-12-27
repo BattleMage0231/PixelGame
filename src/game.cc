@@ -1,3 +1,6 @@
+#include <iostream>
+#include <SDL_image.h>
+
 #include "game.h"
 
 Game::Game() {}
@@ -5,7 +8,12 @@ Game::Game() {}
 Game::~Game() {}
 
 void Game::setup() {
-    SDL_CreateWindowAndRenderer(WIN_WIDTH, WIN_HEIGHT, 0, &this->window, &this->renderer);
+    SDL_CreateWindowAndRenderer(WIN_WIDTH, WIN_HEIGHT, 0, &window, &renderer);
+    textures = IMG_LoadTexture(renderer, TEXTURES_PATH.c_str());
+    if(!textures) {
+        std::cerr << "Couldn't load textures " << std::endl;
+    }
+    map.loadMap(MAP_1, MAP_1_WIDTH, MAP_1_HEIGHT);
 }
 
 void Game::cleanup() {
@@ -31,6 +39,22 @@ void Game::launch() {
                 handleEvent(event);
             }
         }
+
+        // test code
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        for(int i = 0; i < map.getWidth(); ++i) {
+            for(int j = 0; j < map.getHeight(); ++j) {
+                if(map.isOpaque(i, j)) {
+                    SDL_Rect src = map.getTexture(i, j);
+                    SDL_Rect dest = {64 * i, 64 * j, 64, 64};
+                    SDL_RenderCopy(renderer, textures, &src, &dest);
+                }
+            }
+        }
+
+        SDL_RenderPresent(renderer);
     }
 
     cleanup();
