@@ -15,6 +15,7 @@ add_executable(game
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/game.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/src/map.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/player.cc
 )
 
 target_include_directories(game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

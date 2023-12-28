@@ -1,4 +1,10 @@
+#include <limits>
+#include <glm/geometric.hpp>
+
 #include "map.h"
+
+constexpr double DELTA_T = 0.01;
+constexpr double INF = std::numeric_limits<double>::infinity();
 
 enum Tile { EMPTY, WALL1, WALL2 };
 
@@ -58,4 +64,14 @@ SDL_Rect GameMap::getColumn(double x, double y, double amt) {
     texture.x += col;
     texture.w = 1;
     return texture;
+}
+
+#include <iostream>
+
+glm::dvec2 GameMap::castRay(glm::dvec2 r0, glm::dvec2 u) {
+    u /= glm::max(glm::abs(u.x), glm::abs(u.y));
+    while(!isOpaque(r0.x, r0.y)) {
+        r0 += DELTA_T * u;
+    }
+    return r0;
 }

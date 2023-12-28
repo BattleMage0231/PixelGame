@@ -2,6 +2,7 @@
 #define PIXELGAME_MAP_H_
 
 #include <vector>
+#include <glm/vec2.hpp>
 #include <SDL.h>
 
 constexpr size_t MAP_1_WIDTH = 8;
@@ -39,6 +40,8 @@ class GameMap {
         bool isSolid(double x, double y);
         SDL_Rect getTexture(double x, double y);
         SDL_Rect getColumn(double x, double y, double amt);
+
+        glm::dvec2 castRay(glm::dvec2 r0, glm::dvec2 u);
 };
 
 #endif
