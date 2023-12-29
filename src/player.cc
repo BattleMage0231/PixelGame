@@ -23,4 +23,10 @@ void GamePlayer::update(size_t timeDelta) {
     pos = newPos;
 }
 
-void GamePlayer::render(SDL_Renderer* renderer) {}
+glm::dvec2 GamePlayer::getPosition() {
+    return pos;
+};
+
+SDL_Rect GamePlayer::getTexture() {
+    return SDL_Rect { 0, 0, 0, 0 };
+}

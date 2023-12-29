@@ -3,17 +3,12 @@
 
 #include <memory>
 #include <string>
+#include <glm/vec2.hpp>
 #include <SDL.h>
 
+#include "actor.h"
 #include "map.h"
 #include "player.h"
-
-constexpr size_t WIN_WIDTH = 1024;
-constexpr size_t WIN_HEIGHT = 800;
-
-constexpr size_t FPS_MAX = 120;
-
-const std::string TEXTURES_PATH = "../assets/wolftexturesobj.gif";
 
 class Game {
     SDL_Window* window;
@@ -22,15 +17,24 @@ class Game {
     SDL_Texture* textures;
 
     std::shared_ptr<GamePlayer> player;
+    std::vector<std::shared_ptr<GameActor>> actors;
+
     GameMap map;
+    std::vector<double> ZBuffer;
+    std::vector<double> rayBuffer;
 
     void setup();
     void cleanup();
 
     void handleEvent(SDL_Event event);
 
+    void populateZBuffer();
+    glm::dvec2 getEndpoint(size_t ray);
+
     void renderMinimap();
     void renderMap();
+    void renderActor(std::shared_ptr<GameActor> actor);
+    void renderActors();
 
 public:
     Game();

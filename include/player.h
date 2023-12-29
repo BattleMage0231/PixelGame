@@ -6,7 +6,7 @@
 #include "actor.h"
 #include "map.h"
 
-class GamePlayer : GameActor {
+class GamePlayer : public GameActor {
 public:
     glm::dvec2 pos;
 
@@ -24,7 +24,8 @@ public:
     ~GamePlayer();
 
     void update(size_t timeDelta);
-    void render(SDL_Renderer* renderer);
+    glm::dvec2 getPosition();
+    SDL_Rect getTexture();
 };
 
 #endif

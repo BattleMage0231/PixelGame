@@ -1,10 +1,8 @@
-#include <limits>
 #include <glm/geometric.hpp>
 
 #include "map.h"
 
 constexpr double DELTA_T = 0.01;
-constexpr double INF = std::numeric_limits<double>::infinity();
 
 enum Tile { EMPTY, WALL1, WALL2 };
 

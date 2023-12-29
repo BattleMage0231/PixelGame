@@ -5,20 +5,6 @@
 #include <glm/vec2.hpp>
 #include <SDL.h>
 
-constexpr size_t MAP_1_WIDTH = 8;
-constexpr size_t MAP_1_HEIGHT = 8;
-
-const std::vector<size_t> MAP_1 = {
-    1, 1, 1, 1, 2, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 2, 0, 1,
-    1, 1, 0, 0, 0, 2, 0, 1,
-    1, 0, 0, 0, 0, 2, 0, 1,
-    2, 0, 0, 0, 0, 0, 0, 1,
-    1, 1, 2, 1, 1, 1, 1, 1
-};
-
 class GameMap {
     size_t width;
     size_t height;
