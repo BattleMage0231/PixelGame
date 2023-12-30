@@ -33,7 +33,7 @@ const std::vector<size_t> MAP_1 = {
 };
 
 void MAP_1_LOAD_ACTORS(std::vector<std::shared_ptr<GameActor>>& actors) {
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(3.0, 3.0), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.0, 2.5), SDL_Rect { 512, 0, 64, 64 }));
 }
 
 #endif

@@ -10,8 +10,8 @@ GamePlayer::GamePlayer(glm::dvec2 pos, glm::dvec2 dir, glm::dvec2 plane, GameMap
 
 void GamePlayer::update(size_t timeDelta) {
     // apply rotation
-    camDir = glm::rotate(camDir, angVel);
-    camPlane = glm::rotate(camPlane, angVel);
+    camDir = glm::rotate(camDir, timeDelta * angVel);
+    camPlane = glm::rotate(camPlane, timeDelta * angVel);
     // apply velocity
     glm::dvec2 newPos = pos + timeDelta * vel * glm::normalize(camDir);
     if(map.isSolid(newPos.x, pos.y)) {
