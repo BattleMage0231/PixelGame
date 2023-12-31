@@ -2,6 +2,7 @@
 #include <glm/geometric.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include <algorithm>
 #include "data.h"
@@ -16,7 +17,11 @@ void Game::setup() {
     SDL_CreateWindowAndRenderer(WIN_WIDTH, WIN_HEIGHT, 0, &window, &renderer);
     textures = IMG_LoadTexture(renderer, TEXTURES_PATH.c_str());
     if(!textures) {
-        std::cerr << "Couldn't load textures " << std::endl;
+        std::cerr << "Couldn't load textures" << std::endl;
+    }
+    font = TTF_OpenFont("../assets/RubikLines-Regular.ttf", 18);
+    if(!font) {
+        std::cerr << "Couldn't load font" << std::endl;
     }
     map.loadMap(MAP_1, MAP_1_WIDTH, MAP_1_HEIGHT);
     actors.clear();
@@ -38,11 +43,15 @@ void Game::setup() {
 }
 
 void Game::cleanup() {
-    SDL_DestroyRenderer(this->renderer);
-    this->renderer = nullptr;
-    SDL_DestroyWindow(this->window);
-    this->window = nullptr;
+    SDL_DestroyRenderer(renderer);
+    renderer = nullptr;
+    SDL_DestroyWindow(window);
+    window = nullptr;
     player.reset();
+    SDL_DestroyTexture(textures);
+    textures = nullptr;
+    TTF_CloseFont(font);
+    font = nullptr;
 }
 
 void Game::handleEvent(SDL_Event event) {
@@ -55,13 +64,13 @@ void Game::handleEvent(SDL_Event event) {
         }
     } else if(event.type == SDL_KEYDOWN) {
         if(event.key.keysym.sym == 'w') {
-            player->vel = 0.000005;
+            player->vel = 0.003;
         } else if(event.key.keysym.sym == 's') {
-            player->vel = -0.000005;
+            player->vel = -0.003;
         } else if(event.key.keysym.sym == 'd') {
-            player->angVel = 0.00001;
+            player->angVel = 0.005;
         } else if(event.key.keysym.sym == 'a') {
-            player->angVel = -0.00001;
+            player->angVel = -0.005;
         }
     }
 }
@@ -129,6 +138,7 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
     glm::dvec2 endB = midpoint - endDir;
     double tA, tB;
 
+    /*
     SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
     SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + midpoint).x * 64), (int) ((player->pos + midpoint).y * 64));
     SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + endA).x * 64), (int) ((player->pos + endA).y * 64));
@@ -139,7 +149,6 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
     SDL_RenderDrawLine(renderer, (int) ((player->pos + player->camDir).x * 64), (int) ((player->pos + player->camDir).y * 64), (int) ((player->pos + player->camDir + player->camPlane).x * 64), (int) ((player->pos + player->camDir + player->camPlane).y * 64));
     SDL_RenderDrawLine(renderer, (int) ((player->pos + player->camDir).x * 64), (int) ((player->pos + player->camDir).y * 64), (int) ((player->pos + player->camDir - player->camPlane).x * 64), (int) ((player->pos + player->camDir - player->camPlane).y * 64));
 
-    /*
     std::cout << "LOG" << std::endl;
     std::cout << "pos: " << player->pos.x << " " << player->pos.y << std::endl;
     std::cout << "camDir: " << player->camDir.x << " " << player->camDir.y << std::endl;
@@ -179,9 +188,11 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
     // get indices of rays
 
     //std::cout << tA << " " << tB << std::endl;
+    /*
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + player->camDir + tA * player->camPlane).x * 64), (int) ((player->pos + player->camDir + tA * player->camPlane).y * 64));
     SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + player->camDir + tB * player->camPlane).x * 64), (int) ((player->pos + player->camDir + tB * player->camPlane).y * 64));
+    */
 
     tA = glm::clamp(tA, -1.0, 1.0);
     tB = glm::clamp(tB, -1.0, 1.0);
@@ -250,10 +261,22 @@ void Game::renderActors() {
     }
 }
 
+void Game::renderDebug(double FPS) {
+    SDL_Color textcol = {255, 255, 255};
+    std::string str = "FPS: " + std::to_string(static_cast<size_t>(FPS));
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, str.c_str(), textcol);
+    SDL_Rect destrec = {0, 0, 500, 100};
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_RenderCopy(renderer, tex, NULL, &destrec);
+    SDL_DestroyTexture(tex);
+    SDL_FreeSurface(textSurface);
+}
+
 void Game::launch() {
     setup();
 
     size_t timer = SDL_GetTicks();
+    double FPS = 0.0;
 
     // game loop
     while(true) {
@@ -268,9 +291,14 @@ void Game::launch() {
         }
 
         size_t newTime = SDL_GetTicks();
-        if(newTime - timer <= 1000.0 / FPS_MAX) continue;
+        size_t deltaTime = newTime - timer;
+        //if(deltaTime <= 1000.0 / FPS_MAX) continue;
 
-        player->update(newTime);
+        player->update(deltaTime);
+        for(auto actor : actors) {
+            actor->update(deltaTime);
+        }
+        FPS = (FPS * 0.8) + (1000.0 / deltaTime * 0.2);
         timer = newTime;
 
         populateZBuffer();
@@ -279,15 +307,11 @@ void Game::launch() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         renderMap();
 
         //renderMinimap();
         renderActors();
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_Rect test { (int) (64 * 4.0 - 2.5), (int) (64 * 2.5 - 2.5), 5, 5 };
-        SDL_RenderFillRect(renderer, &test);
+        renderDebug(FPS);
 
         SDL_RenderPresent(renderer);
     }

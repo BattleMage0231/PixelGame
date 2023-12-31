@@ -14,6 +14,7 @@ constexpr size_t WIN_HEIGHT = 800;
 constexpr size_t FPS_MAX = 120;
 
 const std::string TEXTURES_PATH = "../assets/wolftexturesobj.gif";
+const std::string FONT_PATH = "../assets/RubikLines-Regular.ttf";
 
 constexpr double INF = std::numeric_limits<double>::infinity();
 constexpr double EPS = 1e-6;

@@ -15,6 +15,7 @@ class Game {
     SDL_Renderer* renderer;
 
     SDL_Texture* textures;
+    TTF_Font* font;
 
     std::shared_ptr<GamePlayer> player;
     std::vector<std::shared_ptr<GameActor>> actors;
@@ -35,6 +36,7 @@ class Game {
     void renderMap();
     void renderActor(std::shared_ptr<GameActor> actor);
     void renderActors();
+    void renderDebug(double FPS);
 
 public:
     Game();

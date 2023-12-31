@@ -15,10 +15,10 @@ void GamePlayer::update(size_t timeDelta) {
     // apply velocity
     glm::dvec2 newPos = pos + timeDelta * vel * glm::normalize(camDir);
     if(map.isSolid(newPos.x, pos.y)) {
-        newPos.y = pos.y;
+        newPos.x = pos.x;
     } 
     if(map.isSolid(pos.x, newPos.y)) {
-        newPos.x = pos.x;
+        newPos.y = pos.y;
     }
     pos = newPos;
 }
