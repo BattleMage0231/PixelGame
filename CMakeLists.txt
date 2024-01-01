@@ -12,6 +12,7 @@ find_package(SDL2_ttf REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
 add_executable(game 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/enemy.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/game.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/src/map.cc

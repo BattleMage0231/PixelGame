@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "actor.h"
+#include "enemy.h"
 #include "static.h"
 
 constexpr size_t WIN_WIDTH = 1024;
@@ -33,11 +34,5 @@ const std::vector<size_t> MAP_1 = {
     2, 0, 0, 0, 0, 0, 0, 1,
     1, 1, 2, 1, 1, 1, 1, 1
 };
-
-inline void MAP_1_LOAD_ACTORS(std::vector<std::shared_ptr<GameActor>>& actors) {
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.0, 2.5), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(3.5, 6.5), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.2, 3.7), SDL_Rect { 512, 0, 64, 64 }));
-}
 
 #endif

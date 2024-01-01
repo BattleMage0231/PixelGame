@@ -1,11 +1,12 @@
+#include <algorithm>
 #include <iostream>
 #include <glm/geometric.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include <algorithm>
 #include "data.h"
+#include "enemy.h"
 #include "game.h"
 #include "static.h"
 
@@ -19,13 +20,12 @@ void Game::setup() {
     if(!textures) {
         std::cerr << "Couldn't load textures" << std::endl;
     }
-    font = TTF_OpenFont("../assets/RubikLines-Regular.ttf", 18);
+    font = TTF_OpenFont("../assets/RubikLines-Regular.ttf", 14);
     if(!font) {
         std::cerr << "Couldn't load font" << std::endl;
     }
     map.loadMap(MAP_1, MAP_1_WIDTH, MAP_1_HEIGHT);
     actors.clear();
-    MAP_1_LOAD_ACTORS(actors);
     ZBuffer.resize(WIN_WIDTH);
     rayBuffer.resize(WIN_WIDTH);
     for(size_t i = 0; i < WIN_WIDTH; ++i) {
@@ -40,6 +40,10 @@ void Game::setup() {
     // TEMP
     player->camDir = glm::rotate(player->camDir, 1.5);
     player->camPlane = glm::rotate(player->camPlane, 1.5);
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.0, 2.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(3.5, 6.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.2, 3.7), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<EnemyActor>(glm::dvec2(2.0, 4.0), glm::dvec2(1.0, 0.0), SDL_Rect { 448, 0, 64, 64 }, player, map));
 }
 
 void Game::cleanup() {
@@ -239,18 +243,22 @@ void Game::launch() {
     // game loop
     while(true) {
         // handle events
+        bool exit = false;
         SDL_Event event;
-        if(SDL_PollEvent(&event)) {
+        while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
+                exit = true;
                 break;
             } else {
                 handleEvent(event);
             }
         }
+        if(exit) {
+            break;
+        }
 
         size_t newTime = SDL_GetTicks();
         size_t deltaTime = newTime - timer;
-        //if(deltaTime <= 1000.0 / FPS_MAX) continue;
 
         player->update(deltaTime);
         for(auto actor : actors) {
