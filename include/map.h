@@ -22,6 +22,7 @@ class GameMap {
 
         void loadMap(std::vector<size_t> data, size_t w, size_t h);
 
+        glm::ivec2 getCoords(double x, double y);
         bool isOpaque(double x, double y);
         bool isSolid(double x, double y);
         SDL_Rect getTexture(double x, double y);

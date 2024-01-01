@@ -5,7 +5,6 @@
 #include <SDL.h>
 
 #include "actor.h"
-#include "map.h"
 
 class StaticActor : public GameActor {
 public:

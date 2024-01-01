@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "actor.h"
@@ -33,8 +34,10 @@ const std::vector<size_t> MAP_1 = {
     1, 1, 2, 1, 1, 1, 1, 1
 };
 
-void MAP_1_LOAD_ACTORS(std::vector<std::shared_ptr<GameActor>>& actors) {
+inline void MAP_1_LOAD_ACTORS(std::vector<std::shared_ptr<GameActor>>& actors) {
     actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.0, 2.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(3.5, 6.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.2, 3.7), SDL_Rect { 512, 0, 64, 64 }));
 }
 
 #endif

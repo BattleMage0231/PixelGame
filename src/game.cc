@@ -138,25 +138,6 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
     glm::dvec2 endB = midpoint - endDir;
     double tA, tB;
 
-    /*
-    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + midpoint).x * 64), (int) ((player->pos + midpoint).y * 64));
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + endA).x * 64), (int) ((player->pos + endA).y * 64));
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + endB).x * 64), (int) ((player->pos + endB).y * 64));
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + player->camDir).x * 64), (int) ((player->pos + player->camDir).y * 64));
-    SDL_RenderDrawLine(renderer, (int) ((player->pos + player->camDir).x * 64), (int) ((player->pos + player->camDir).y * 64), (int) ((player->pos + player->camDir + player->camPlane).x * 64), (int) ((player->pos + player->camDir + player->camPlane).y * 64));
-    SDL_RenderDrawLine(renderer, (int) ((player->pos + player->camDir).x * 64), (int) ((player->pos + player->camDir).y * 64), (int) ((player->pos + player->camDir - player->camPlane).x * 64), (int) ((player->pos + player->camDir - player->camPlane).y * 64));
-
-    std::cout << "LOG" << std::endl;
-    std::cout << "pos: " << player->pos.x << " " << player->pos.y << std::endl;
-    std::cout << "camDir: " << player->camDir.x << " " << player->camDir.y << std::endl;
-    std::cout << "camPlane: " << player->camPlane.x << " " << player->camPlane.y << std::endl;
-    std::cout << "endA: " << endA.x << " " << endA.y << std::endl;
-    std::cout << "endB: " << endB.x << " " << endB.y << std::endl;
-    */
-
     // project first endpoint onto camera plane
     glm::dmat2 matA(
         -player->camPlane.x, -player->camPlane.y,
@@ -186,29 +167,17 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
     }
 
     // get indices of rays
-
-    //std::cout << tA << " " << tB << std::endl;
-    /*
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + player->camDir + tA * player->camPlane).x * 64), (int) ((player->pos + player->camDir + tA * player->camPlane).y * 64));
-    SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + player->camDir + tB * player->camPlane).x * 64), (int) ((player->pos + player->camDir + tB * player->camPlane).y * 64));
-    */
-
     tA = glm::clamp(tA, -1.0, 1.0);
     tB = glm::clamp(tB, -1.0, 1.0);
-
     double rayA = (tA + 1.0) * (WIN_WIDTH - 1) / 2.0;
     double rayB = (tB + 1.0) * (WIN_WIDTH - 1) / 2.0;
     size_t idxA = static_cast<size_t>(glm::ceil(rayA));
     size_t idxB = static_cast<size_t>(glm::floor(rayB));
-    if(idxA < idxB) {
+    if(idxB < idxA) {
         std::swap(idxA, idxB);
     }
 
-    //std::cout << idxA << " " << idxB << std::endl;
-    //std::cout << "===============" << std::endl;
-
-    for(size_t i = idxB; i <= idxA; ++i) {
+    for(size_t i = idxA; i <= idxB; ++i) {
         glm::dvec2 projDir = player->camDir + rayBuffer[i] * player->camPlane;
 
         // get intersection of ray with sprite
@@ -224,14 +193,6 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
         double t = sol.x, s = sol.y;
         glm::dvec2 spritePoint = t * projDir; // relative to player
 
-        if(s < -1.0 || s > 1.0) {
-            continue;
-        }
-
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-        //SDL_RenderDrawLine(renderer, (int) (player->pos.x * 64), (int) (player->pos.y * 64), (int) ((player->pos + spritePoint).x * 64), (int) ((player->pos + spritePoint).y * 64));
-
-
         // calculate perpendicular distance and draw
         double perpDist = glm::abs(glm::dot(spritePoint, glm::normalize(player->camDir)));
         if(perpDist > ZBuffer[i]) {
@@ -241,10 +202,7 @@ void Game::renderActor(std::shared_ptr<GameActor> actor) {
         size_t pixel = static_cast<size_t>(texWidth / 2.0 + s * texWidth / 2.0);
         SDL_Rect src { texture.x + static_cast<int>(pixel), texture.y, 1, texture.h };
         SDL_Rect dest { static_cast<int>(i), static_cast<int>(WIN_HEIGHT / 2.0 - height / 2.0), 1, static_cast<int>(height) };
-        //std::cout << "RENDERED SOMETHING " << i << std::endl;
 
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-        //SDL_RenderDrawLine(renderer, i, static_cast<int>(WIN_HEIGHT / 2.0 - height / 2.0), i, static_cast<int>(WIN_HEIGHT / 2.0 + height / 2.0));
         SDL_RenderCopy(renderer, textures, &src, &dest);
     }
 }
@@ -308,9 +266,9 @@ void Game::launch() {
         SDL_RenderClear(renderer);
 
         renderMap();
+        renderActors();
 
         //renderMinimap();
-        renderActors();
         renderDebug(FPS);
 
         SDL_RenderPresent(renderer);
