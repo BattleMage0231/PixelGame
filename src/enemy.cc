@@ -2,7 +2,8 @@
 
 #include "enemy.h"
 
-EnemyActor::EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map) : pos(pos), dir(dir), texture(texture), vel(0.0), player(player), map(map) {}
+EnemyActor::EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map) 
+    : pos(pos), dir(dir), texture(texture), vel(0.0), player(player), map(map) {}
 
 EnemyActor::~EnemyActor() {}
 

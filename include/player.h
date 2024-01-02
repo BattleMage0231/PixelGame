@@ -20,6 +20,11 @@ public:
 
     GameMap& map;
 
+    // hotbar slot
+    size_t slot;
+    size_t animStep;
+    size_t animTimer;
+
     GamePlayer(glm::dvec2 pos, glm::dvec2 dir, glm::dvec2 plane, GameMap& map);
     ~GamePlayer();
 

@@ -21,6 +21,15 @@ const std::string FONT_PATH = "../assets/RubikLines-Regular.ttf";
 constexpr double INF = std::numeric_limits<double>::infinity();
 constexpr double EPS = 1e-6;
 
+constexpr size_t ITEM_FRAME_TIME = 100;
+constexpr size_t ITEM_FRAME_CNT = 5;
+constexpr size_t ITEM_SIZE_MULT = 16;
+
+constexpr size_t GUN_SLOT = 1;
+constexpr size_t KNIFE_SLOT = 2;
+
+constexpr size_t CROSSHAIR_LENGTH = 10;
+
 constexpr size_t MAP_1_WIDTH = 8;
 constexpr size_t MAP_1_HEIGHT = 8;
 

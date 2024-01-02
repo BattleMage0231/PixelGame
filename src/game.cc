@@ -62,9 +62,16 @@ void Game::handleEvent(SDL_Event event) {
     if(event.type == SDL_KEYUP) {
         if(event.key.keysym.sym == 'a' || event.key.keysym.sym == 'd') {
             player->angVel = 0.0;
-        }
-        if(event.key.keysym.sym == 'w' || event.key.keysym.sym == 's') {
+        } else if(event.key.keysym.sym == 'w' || event.key.keysym.sym == 's') {
             player->vel = 0.0;
+        } else if('0' <= event.key.keysym.sym && event.key.keysym.sym <= '9') {
+            size_t slot = static_cast<size_t>(event.key.keysym.sym - '0');
+            player->slot = slot;
+            player->animStep = 0;
+        } else if(event.key.keysym.sym == ' ') {
+            player->animStep = 1;
+            player->animTimer = 0;
+            useItem();
         }
     } else if(event.type == SDL_KEYDOWN) {
         if(event.key.keysym.sym == 'w') {
@@ -223,6 +230,33 @@ void Game::renderActors() {
     }
 }
 
+void Game::renderPlayer() {
+    // render held item
+    SDL_Rect itemTexture = player->getTexture();
+    SDL_Rect itemDest { 
+        static_cast<int>(WIN_WIDTH / 2.0 - itemTexture.w / 2.0 * ITEM_SIZE_MULT), 
+        static_cast<int>(WIN_HEIGHT - ITEM_SIZE_MULT * itemTexture.h), 
+        static_cast<int>(ITEM_SIZE_MULT * itemTexture.w), 
+        static_cast<int>(ITEM_SIZE_MULT * itemTexture.h) 
+    };
+    SDL_RenderCopy(renderer, textures, &itemTexture, &itemDest);
+
+    // render crosshait
+    int midX = WIN_WIDTH / 2;
+    int midY = WIN_HEIGHT / 2;
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+    SDL_RenderDrawLine(
+        renderer,
+        midX - CROSSHAIR_LENGTH, midY,
+        midX + CROSSHAIR_LENGTH, midY
+    );
+    SDL_RenderDrawLine(
+        renderer,
+        midX, midY - CROSSHAIR_LENGTH,
+        midX, midY + CROSSHAIR_LENGTH
+    );
+}
+
 void Game::renderDebug(double FPS) {
     SDL_Color textcol = {255, 255, 255};
     std::string str = "FPS: " + std::to_string(static_cast<size_t>(FPS));
@@ -232,6 +266,50 @@ void Game::renderDebug(double FPS) {
     SDL_RenderCopy(renderer, tex, NULL, &destrec);
     SDL_DestroyTexture(tex);
     SDL_FreeSurface(textSurface);
+}
+
+void Game::useItem() {
+    if(player->slot != GUN_SLOT && player->slot != KNIFE_SLOT) {
+        return;
+    }
+    size_t midRay = WIN_WIDTH / 2;
+    // todo: use isSolid instead of isOpaque in ray casting
+    glm::dvec2 foot = getEndpoint(midRay);
+    glm::dvec2 diff = foot - player->pos;
+    bool hasHit = false;
+    double hitT = INF;
+    std::shared_ptr<GameActor> hitSprite;
+    for(auto actor : actors) {
+        glm::dvec2 midpoint = actor->getPosition() - player->pos;
+        glm::dvec2 endDir = 0.5 * glm::normalize(glm::dvec2(-midpoint.y, midpoint.x));
+
+        // intersect sprite with ray cast
+        glm::dmat2 mat(
+            diff.x, diff.y,
+            -endDir.x, -endDir.y
+        );
+        double det = glm::determinant(mat);
+        if(glm::abs(det) >= EPS) {
+            glm::dvec2 res = glm::inverse(mat) * midpoint;
+            double t = res.x, s = res.y;
+            if(0.0 <= t && t <= 1.0 && -1.0 <= s && s <= 1.0) {
+                if(!hasHit || t < hitT) {
+                    hasHit = true;
+                    hitT = t;
+                    hitSprite = actor;
+                }
+            }
+        }
+    }
+    if(!hasHit) {
+        std::cout << "HIT WALL" << std::endl;
+        return;
+    }
+    if(auto enemy = std::dynamic_pointer_cast<EnemyActor>(hitSprite)) {
+        std::cout << "HIT ENEMY" << std::endl;
+    } else {
+        std::cout << "HIT SOMETHING" << std::endl;
+    }
 }
 
 void Game::launch() {
@@ -269,12 +347,12 @@ void Game::launch() {
 
         populateZBuffer();
 
-        // test code
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
         renderMap();
         renderActors();
+        renderPlayer();
 
         //renderMinimap();
         renderDebug(FPS);

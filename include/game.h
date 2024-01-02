@@ -36,7 +36,10 @@ class Game {
     void renderMap();
     void renderActor(std::shared_ptr<GameActor> actor);
     void renderActors();
+    void renderPlayer();
     void renderDebug(double FPS);
+
+    void useItem();
 
 public:
     Game();
