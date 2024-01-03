@@ -120,6 +120,13 @@ void Game::renderMinimap() {
 }
 
 void Game::renderMap() {
+    // render sky and floor
+    SDL_Rect skyRect { 0, 0, WIN_WIDTH, WIN_HEIGHT / 2 };
+    SDL_SetRenderDrawColor(renderer, 144, 201, 222, 255);
+    SDL_RenderFillRect(renderer, &skyRect);
+    SDL_Rect floorRect { 0, WIN_HEIGHT / 2 + 1, WIN_WIDTH, WIN_HEIGHT / 2 };
+    SDL_SetRenderDrawColor(renderer, 48, 54, 56, 255);
+    SDL_RenderFillRect(renderer, &floorRect);
     for(size_t i = 0; i < WIN_WIDTH; ++i) {
         glm::dvec2 wall = getEndpoint(i);
 
@@ -132,7 +139,6 @@ void Game::renderMap() {
         // calculate the height
         double height = WIN_HEIGHT / ZBuffer[i];
         SDL_Rect dest { static_cast<int>(i), static_cast<int>(WIN_HEIGHT / 2.0 - height / 2.0), 1, static_cast<int>(height) };
-
         SDL_RenderCopy(renderer, textures, &src, &dest);
     }
 }
