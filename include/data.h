@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <glm/vec2.hpp>
 
 #include "actor.h"
 #include "enemy.h"
@@ -29,6 +30,14 @@ constexpr size_t GUN_SLOT = 1;
 constexpr size_t KNIFE_SLOT = 2;
 
 constexpr size_t CROSSHAIR_LENGTH = 10;
+
+constexpr double ENEMY_BLOCK_TOLERANCE = 0.5;
+constexpr double ENEMY_CLOSE_DIST = 1.0;
+constexpr double ENEMY_FAR_DIST = 7.0;
+const std::vector<glm::dvec2> POS_DELTA = { 
+    { 1.0, 0.0 }, { -1.0, 0.0 }, { 0.0, 1.0 }, { 0.0, -1.0}, 
+    { 1.0, 1.0 }, { -1.0, 1.0 }, { 1.0, -1.0 }, { -1.0, -1.0}
+};
 
 constexpr size_t MAP_1_WIDTH = 8;
 constexpr size_t MAP_1_HEIGHT = 8;

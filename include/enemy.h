@@ -21,6 +21,7 @@ public:
     EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map);
     ~EnemyActor();
 
+    glm::dvec2 pathfind();
     void update(size_t timeDelta);
     glm::dvec2 getPosition();
     SDL_Rect getTexture();

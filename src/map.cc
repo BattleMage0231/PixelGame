@@ -14,7 +14,9 @@ const std::vector<SDL_Rect> TILE_TEXTURES = {
 };
 
 bool GameMap::outOfBounds(double x, double y) {
-    return (x < 0.0 || x >= width || y < 0.0 || y >= height);
+    glm::ivec2 mapCoords = getCoords(x, y);
+    int xi = mapCoords.x, yi = mapCoords.y;
+    return (xi < 0 || xi >= width || yi < 0 || yi >= height);
 }
 
 GameMap::GameMap() {}
