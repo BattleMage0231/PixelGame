@@ -25,6 +25,8 @@ public:
     size_t animStep;
     size_t animTimer;
 
+    int health;
+
     GamePlayer(glm::dvec2 pos, glm::dvec2 dir, glm::dvec2 plane, GameMap& map);
     ~GamePlayer();
 

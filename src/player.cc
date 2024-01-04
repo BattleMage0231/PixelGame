@@ -7,9 +7,12 @@
 GamePlayer::~GamePlayer() {}
 
 GamePlayer::GamePlayer(glm::dvec2 pos, glm::dvec2 dir, glm::dvec2 plane, GameMap& map) 
-    : pos(pos), camDir(dir), camPlane(plane), vel(0.0), angVel(0.0), map(map), slot(0), animStep(0) {}
+    : pos(pos), camDir(dir), camPlane(plane), vel(0.0), angVel(0.0), map(map), slot(0), animStep(0), health(PLAYER_MAX_HEALTH) {}
 
 void GamePlayer::update(size_t timeDelta) {
+    if(health <= 0) {
+        return;
+    }
     // apply rotation
     camDir = glm::rotate(camDir, timeDelta * angVel);
     camPlane = glm::rotate(camPlane, timeDelta * angVel);
@@ -38,9 +41,9 @@ glm::dvec2 GamePlayer::getPosition() {
 
 SDL_Rect GamePlayer::getTexture() {
     if(slot == GUN_SLOT) {
-        return SDL_Rect { static_cast<int>(64 * animStep), 64, 64, 64 };
-    } else if(slot == KNIFE_SLOT) {
         return SDL_Rect { static_cast<int>(320 + 64 * animStep), 64, 64, 64 };
+    } else if(slot == KNIFE_SLOT) {
+        return SDL_Rect { static_cast<int>(64 * animStep), 64, 64, 64 };
     } else {
         return SDL_Rect { 0, 0, 0, 0 };
     }

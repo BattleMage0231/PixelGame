@@ -319,6 +319,12 @@ void Game::useItem() {
     }
     if(auto enemy = std::dynamic_pointer_cast<EnemyActor>(hitSprite)) {
         std::cout << "HIT ENEMY" << std::endl;
+        double dist = glm::length(player->pos - enemy->pos);
+        if(player->slot == GUN_SLOT && dist <= GUN_RANGE) {
+            enemy->health -= GUN_DAMAGE;
+        } else if(player->slot == KNIFE_SLOT && dist <= KNIFE_RANGE) {
+            enemy->health -= KNIFE_DAMAGE;
+        }
     } else {
         std::cout << "HIT SOMETHING" << std::endl;
     }

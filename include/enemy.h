@@ -14,9 +14,12 @@ public:
     glm::dvec2 pos;
     glm::dvec2 dir;
     double vel;
+
     SDL_Rect texture;
     std::shared_ptr<GamePlayer> player;
     GameMap& map;
+
+    int health;
 
     EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map);
     ~EnemyActor();

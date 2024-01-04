@@ -6,7 +6,7 @@
 #include "enemy.h"
 
 EnemyActor::EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map) 
-    : pos(pos), dir(dir), texture(texture), vel(0.0), player(player), map(map) {}
+    : pos(pos), dir(dir), texture(texture), vel(0.0), player(player), map(map), health(ENEMY_MAX_HEALTH) {}
 
 EnemyActor::~EnemyActor() {}
 
@@ -49,6 +49,9 @@ glm::dvec2 EnemyActor::pathfind() {
 }
 
 void EnemyActor::update(size_t timeDelta) {
+    if(health <= 0) {
+        return;
+    }
     double dist = glm::length(player->pos - pos);
     if(dist < ENEMY_CLOSE_DIST || dist > ENEMY_FAR_DIST) {
         vel = 0.0;
@@ -68,9 +71,17 @@ void EnemyActor::update(size_t timeDelta) {
 }
 
 glm::dvec2 EnemyActor::getPosition() {
-    return pos;
+    if(health <= 0) {
+        return glm::dvec2(INF, INF);
+    } else {
+        return pos;
+    }
 }
 
 SDL_Rect EnemyActor::getTexture() {
-    return texture;
+    if(health <= 0) {
+        return SDL_Rect { 0, 0, 0, 0 };
+    } else {
+        return texture;
+    }
 }

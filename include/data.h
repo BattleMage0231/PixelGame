@@ -26,11 +26,19 @@ constexpr size_t ITEM_FRAME_TIME = 100;
 constexpr size_t ITEM_FRAME_CNT = 5;
 constexpr size_t ITEM_SIZE_MULT = 16;
 
-constexpr size_t GUN_SLOT = 1;
-constexpr size_t KNIFE_SLOT = 2;
+constexpr size_t KNIFE_SLOT = 1;
+constexpr int KNIFE_DAMAGE = 5;
+constexpr double KNIFE_RANGE = 1.0;
+
+constexpr size_t GUN_SLOT = 2;
+constexpr int GUN_DAMAGE = 20;
+constexpr double GUN_RANGE = 7.0;
 
 constexpr size_t CROSSHAIR_LENGTH = 10;
 
+constexpr int PLAYER_MAX_HEALTH = 100;
+
+constexpr int ENEMY_MAX_HEALTH = 30;
 constexpr double ENEMY_BLOCK_TOLERANCE = 0.5;
 constexpr double ENEMY_CLOSE_DIST = 1.0;
 constexpr double ENEMY_FAR_DIST = 7.0;
