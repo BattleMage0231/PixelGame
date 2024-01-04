@@ -1,5 +1,7 @@
 #include <algorithm>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <glm/geometric.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <SDL_image.h>
@@ -24,26 +26,11 @@ void Game::setup() {
     if(!font) {
         std::cerr << "Couldn't load font" << std::endl;
     }
-    map.loadMap(MAP_1, MAP_1_WIDTH, MAP_1_HEIGHT);
-    actors.clear();
     ZBuffer.resize(WIN_WIDTH);
     rayBuffer.resize(WIN_WIDTH);
     for(size_t i = 0; i < WIN_WIDTH; ++i) {
         rayBuffer[i] = -1.0 + (2.0 * i) / (WIN_WIDTH - 1);
     }
-    player = std::shared_ptr<GamePlayer>(new GamePlayer(
-        glm::dvec2 { 3.0, 2.0 }, 
-        glm::dvec2 { 1.0, 1.0 }, 
-        glm::dvec2 { -0.66, 0.66},
-        map
-    ));
-    // TEMP
-    player->camDir = glm::rotate(player->camDir, 1.5);
-    player->camPlane = glm::rotate(player->camPlane, 1.5);
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.0, 2.5), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(3.5, 6.5), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(4.2, 3.7), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<EnemyActor>(glm::dvec2(2.0, 4.0), glm::dvec2(1.0, 0.0), SDL_Rect { 448, 0, 64, 64 }, player, map));
 }
 
 void Game::cleanup() {
@@ -56,6 +43,25 @@ void Game::cleanup() {
     textures = nullptr;
     TTF_CloseFont(font);
     font = nullptr;
+}
+
+void Game::loadMap1() {
+    std::ifstream input(MAP_1_PATH, std::ios::binary);
+    std::vector<size_t> mapData(std::istreambuf_iterator<char>(input), {});
+    map.loadMap(mapData, MAP_1_WIDTH, MAP_1_HEIGHT);
+    actors.clear();
+    player = std::shared_ptr<GamePlayer>(new GamePlayer(
+        glm::dvec2 { 2.5, 17.5 }, 
+        glm::dvec2 { 1.0, 1.0 }, 
+        glm::dvec2 { -0.66, 0.66},
+        map
+    ));
+    player->camDir = glm::rotate(player->camDir, 1.5);
+    player->camPlane = glm::rotate(player->camPlane, 1.5);
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(2.5, 16.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(2.5, 5.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<StaticActor>(glm::dvec2(12.5, 5.5), SDL_Rect { 512, 0, 64, 64 }));
+    actors.push_back(std::make_shared<EnemyActor>(glm::dvec2(5.5, 4.0), glm::dvec2(1.0, 0.0), SDL_Rect { 448, 0, 64, 64 }, player, map));
 }
 
 void Game::handleEvent(SDL_Event event) {
@@ -320,6 +326,7 @@ void Game::useItem() {
 
 void Game::launch() {
     setup();
+    loadMap1();
 
     size_t timer = SDL_GetTicks();
     double FPS = 0.0;
@@ -356,12 +363,15 @@ void Game::launch() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        //renderMinimap();
+        
         renderMap();
         renderActors();
         renderPlayer();
 
         //renderMinimap();
         renderDebug(FPS);
+        
 
         SDL_RenderPresent(renderer);
     }

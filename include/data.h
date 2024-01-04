@@ -39,18 +39,8 @@ const std::vector<glm::dvec2> POS_DELTA = {
     { 1.0, 1.0 }, { -1.0, 1.0 }, { 1.0, -1.0 }, { -1.0, -1.0}
 };
 
-constexpr size_t MAP_1_WIDTH = 8;
-constexpr size_t MAP_1_HEIGHT = 8;
-
-const std::vector<size_t> MAP_1 = {
-    1, 1, 1, 1, 2, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 2, 0, 1,
-    1, 1, 0, 0, 0, 2, 0, 1,
-    1, 0, 0, 0, 0, 2, 0, 1,
-    2, 0, 0, 0, 0, 0, 0, 1,
-    1, 1, 2, 1, 1, 1, 1, 1
-};
+constexpr size_t MAP_1_WIDTH = 16;
+constexpr size_t MAP_1_HEIGHT = 20;
+const std::string MAP_1_PATH = "../assets/map1";
 
 #endif

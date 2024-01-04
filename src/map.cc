@@ -5,12 +5,18 @@
 
 constexpr double DELTA_T = 0.02;
 
-enum Tile { EMPTY, WALL1, WALL2 };
+enum Tile { EMPTY, WALL0, WALL1, WALL2, WALL3, WALL4, WALL5, WALL6, WALL7 } ;
 
 const std::vector<SDL_Rect> TILE_TEXTURES = {
     SDL_Rect { 0, 0, 0, 0 },
     SDL_Rect { 0, 0, 64, 64 },
-    SDL_Rect { 64, 0, 64, 64 }
+    SDL_Rect { 64, 0, 64, 64 },
+    SDL_Rect { 128, 0, 64, 64 },
+    SDL_Rect { 192, 0, 64, 64 },
+    SDL_Rect { 256, 0, 64, 64 },
+    SDL_Rect { 320, 0, 64, 64 },
+    SDL_Rect { 384, 0, 64, 64 },
+    SDL_Rect { 448, 0, 64, 64 }
 };
 
 bool GameMap::outOfBounds(double x, double y) {
@@ -46,19 +52,19 @@ glm::ivec2 GameMap::getCoords(double x, double y) {
 bool GameMap::isOpaque(double x, double y) {
     if(outOfBounds(x, y)) return true;
     glm::uvec2 co = getCoords(x, y);
-    return (mapData[co.x + height * co.y] != Tile::EMPTY);
+    return (mapData[co.x + width * co.y] != Tile::EMPTY);
 }
 
 bool GameMap::isSolid(double x, double y) {
     if(outOfBounds(x, y)) return true;
     glm::uvec2 co = getCoords(x, y);
-    return (mapData[co.x + height * co.y] != Tile::EMPTY);
+    return (mapData[co.x + width * co.y] != Tile::EMPTY);
 }
 
 SDL_Rect GameMap::getTexture(double x, double y) {
     if(outOfBounds(x, y)) return SDL_Rect { 0, 0, 0, 0 };
     glm::uvec2 co = getCoords(x, y);
-    return TILE_TEXTURES[mapData[co.x + height * co.y]];
+    return TILE_TEXTURES[mapData[co.x + width * co.y]];
 }
 
 SDL_Rect GameMap::getColumn(double x, double y, double amt) {
@@ -82,11 +88,11 @@ glm::dvec2 GameMap::castRay(glm::dvec2 r0, glm::dvec2 u) {
             double tX = (crossX - r0.x) / u.x;
             double tY = (crossY - r0.y) / u.y;
             if(tY < tX) {
-                if(mapData[ri0.x + height * ri1.y] != Tile::EMPTY) {
+                if(mapData[ri0.x + width * ri1.y] != Tile::EMPTY) {
                     break;
                 }
             } else {
-                if(mapData[ri1.x + height * ri0.y] != Tile::EMPTY) {
+                if(mapData[ri1.x + width * ri0.y] != Tile::EMPTY) {
                     break;
                 }
             }

@@ -27,6 +27,8 @@ class Game {
     void setup();
     void cleanup();
 
+    void loadMap1();
+
     void handleEvent(SDL_Event event);
 
     void populateZBuffer();
