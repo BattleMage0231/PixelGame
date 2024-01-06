@@ -374,16 +374,12 @@ void Game::launch() {
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-
-        //renderMinimap();
         
         renderMap();
         renderActors();
         renderPlayer();
 
-        //renderMinimap();
-        renderDebug(FPS);
-        
+        //renderDebug(FPS);
 
         SDL_RenderPresent(renderer);
     }
