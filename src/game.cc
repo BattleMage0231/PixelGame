@@ -253,7 +253,7 @@ void Game::renderPlayer() {
     };
     SDL_RenderCopy(renderer, textures, &itemTexture, &itemDest);
 
-    // render crosshait
+    // render crosshair
     int midX = WIN_WIDTH / 2;
     int midY = WIN_HEIGHT / 2;
     SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
@@ -267,6 +267,16 @@ void Game::renderPlayer() {
         midX, midY - CROSSHAIR_LENGTH,
         midX, midY + CROSSHAIR_LENGTH
     );
+
+    // render health bar
+    int barX = 30;
+    int barY = WIN_HEIGHT - 50;
+    SDL_Rect surround { barX - 10, barY - 10, 220, 50 };
+    SDL_Rect bar { barX, barY, 200 * player->health / PLAYER_MAX_HEALTH, 30 };
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &surround);
+    SDL_SetRenderDrawColor(renderer, 102, 255, 102, 255);
+    SDL_RenderFillRect(renderer, &bar);
 }
 
 void Game::renderDebug(double FPS) {
@@ -314,19 +324,15 @@ void Game::useItem() {
         }
     }
     if(!hasHit) {
-        std::cout << "HIT WALL" << std::endl;
         return;
     }
     if(auto enemy = std::dynamic_pointer_cast<EnemyActor>(hitSprite)) {
-        std::cout << "HIT ENEMY" << std::endl;
         double dist = glm::length(player->pos - enemy->pos);
         if(player->slot == GUN_SLOT && dist <= GUN_RANGE) {
             enemy->health -= GUN_DAMAGE;
         } else if(player->slot == KNIFE_SLOT && dist <= KNIFE_RANGE) {
             enemy->health -= KNIFE_DAMAGE;
         }
-    } else {
-        std::cout << "HIT SOMETHING" << std::endl;
     }
 }
 

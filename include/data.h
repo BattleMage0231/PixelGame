@@ -18,7 +18,7 @@ constexpr double RAYCAST_DELTA = 0.01;
 
 constexpr size_t FPS_MAX = 200;
 
-const std::string TEXTURES_PATH = "../assets/wolftexturesobj.gif";
+const std::string TEXTURES_PATH = "../assets/textures.gif";
 const std::string FONT_PATH = "../assets/RubikLines-Regular.ttf";
 const std::string MAP_1_PATH = "../assets/map1";
 
