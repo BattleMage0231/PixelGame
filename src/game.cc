@@ -61,7 +61,7 @@ void Game::loadMap1() {
     actors.push_back(std::make_shared<StaticActor>(glm::dvec2(2.5, 16.5), SDL_Rect { 512, 0, 64, 64 }));
     actors.push_back(std::make_shared<StaticActor>(glm::dvec2(2.5, 5.5), SDL_Rect { 512, 0, 64, 64 }));
     actors.push_back(std::make_shared<StaticActor>(glm::dvec2(12.5, 5.5), SDL_Rect { 512, 0, 64, 64 }));
-    actors.push_back(std::make_shared<EnemyActor>(glm::dvec2(5.5, 4.0), glm::dvec2(1.0, 0.0), SDL_Rect { 448, 0, 64, 64 }, player, map));
+    actors.push_back(std::make_shared<EnemyActor>(glm::dvec2(5.5, 4.0), glm::dvec2(1.0, 0.0), player, map));
 }
 
 void Game::handleEvent(SDL_Event event) {
@@ -338,7 +338,7 @@ void Game::launch() {
     double FPS = 0.0;
 
     // game loop
-    while(true) {
+    while(player->health > 0) {
         // handle events
         bool exit = false;
         SDL_Event event;

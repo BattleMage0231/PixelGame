@@ -7,6 +7,8 @@
 #include "map.h"
 
 class GamePlayer : public GameActor {
+    GameMap& map;
+
 public:
     glm::dvec2 pos;
 
@@ -17,8 +19,6 @@ public:
     // velocity and angular velocity per ms
     double vel;
     double angVel;
-
-    GameMap& map;
 
     // hotbar slot
     size_t slot;

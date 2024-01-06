@@ -5,8 +5,8 @@
 #include "data.h"
 #include "enemy.h"
 
-EnemyActor::EnemyActor(glm::dvec2 pos, glm::dvec2 dir, SDL_Rect texture, std::shared_ptr<GamePlayer> player, GameMap& map) 
-    : pos(pos), dir(dir), texture(texture), vel(0.0), player(player), map(map), health(ENEMY_MAX_HEALTH) {}
+EnemyActor::EnemyActor(glm::dvec2 pos, glm::dvec2 dir, std::shared_ptr<GamePlayer> player, GameMap& map) 
+    : pos(pos), dir(dir), vel(0.0), player(player), map(map), health(ENEMY_MAX_HEALTH) {}
 
 EnemyActor::~EnemyActor() {}
 
@@ -53,21 +53,53 @@ void EnemyActor::update(size_t timeDelta) {
         return;
     }
     double dist = glm::length(player->pos - pos);
-    if(dist < ENEMY_CLOSE_DIST || dist > ENEMY_FAR_DIST) {
+    if(dist < ENEMY_CLOSE_DIST || (shooting && shootAnim == 1)) {
+        if(shooting) {
+            shootTimer += timeDelta;
+            if(shootAnim == 0 && shootTimer >= ENEMY_SHOOT_TIME) {
+                shootAnim = 1;
+                shootTimer = 0;
+                player->health -= ENEMY_SHOOT_DAMAGE;
+            } else if(shootAnim == 1 && shootTimer >= ENEMY_SHOOT_FRAME_TIME) {
+                shootAnim = 0;
+                shootTimer = 0;
+            }
+        } else {
+            running = false;
+            shooting = true;
+            shootTimer = 0;
+            shootAnim = 0;
+            vel = 0.0;
+        }
+    } else if(dist > ENEMY_FAR_DIST) {
         vel = 0.0;
-        return;
+        running = false;
+        shooting = false;
+    } else {
+        if(running) {
+            runTimer += timeDelta;
+            if(runTimer >= ENEMY_RUN_FRAME_TIME) {
+                runAnim = (runAnim + 1) % ENEMY_RUN_FRAME_CNT;
+                runTimer = 0;
+            }
+        } else {
+            shooting = false;
+            running = true;
+            runTimer = 0;
+            runAnim = 0;
+        }
+        dir = pathfind();
+        vel = 0.001;
+        // apply velocity
+        glm::dvec2 newPos = pos + timeDelta * vel * glm::normalize(dir);
+        if(map.isSolid(newPos.x, pos.y)) {
+            newPos.x = pos.x;
+        } 
+        if(map.isSolid(pos.x, newPos.y)) {
+            newPos.y = pos.y;
+        }
+        pos = newPos;
     }
-    dir = pathfind();
-    vel = 0.001;
-    // apply velocity
-    glm::dvec2 newPos = pos + timeDelta * vel * glm::normalize(dir);
-    if(map.isSolid(newPos.x, pos.y)) {
-        newPos.x = pos.x;
-    } 
-    if(map.isSolid(pos.x, newPos.y)) {
-        newPos.y = pos.y;
-    }
-    pos = newPos;
 }
 
 glm::dvec2 EnemyActor::getPosition() {
@@ -81,7 +113,11 @@ glm::dvec2 EnemyActor::getPosition() {
 SDL_Rect EnemyActor::getTexture() {
     if(health <= 0) {
         return SDL_Rect { 0, 0, 0, 0 };
+    } else if(running) {
+        return SDL_Rect { static_cast<int>(64 * runAnim), 128, 64, 64 };
+    } else if(shooting) {
+        return SDL_Rect { 256 + static_cast<int>(64 * shootAnim), 128, 64, 64 };
     } else {
-        return texture;
+        return SDL_Rect { 384, 128, 64, 64 };
     }
 }

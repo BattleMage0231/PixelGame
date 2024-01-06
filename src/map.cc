@@ -3,8 +3,6 @@
 #include "data.h"
 #include "map.h"
 
-constexpr double DELTA_T = 0.02;
-
 enum Tile { EMPTY, WALL0, WALL1, WALL2, WALL3, WALL4, WALL5, WALL6, WALL7 } ;
 
 const std::vector<SDL_Rect> TILE_TEXTURES = {
@@ -103,7 +101,7 @@ glm::dvec2 GameMap::castRay(glm::dvec2 r0, glm::dvec2 u) {
         ri1 = getCoords(r1.x, r1.y);
     }
     while(!isOpaque(r0.x, r0.y)) {
-        r0 += DELTA_T * u;
+        r0 += RAYCAST_DELTA * u;
     }
     return r0;
 }
