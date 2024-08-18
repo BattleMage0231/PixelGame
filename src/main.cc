@@ -7,7 +7,7 @@
 #include "map.h"
 
 int main(int argc, char* argv[]) {
-    if(SDL_Init(SDL_INIT_EVERYTHING)) {
+    if(SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
         return -1;
     }

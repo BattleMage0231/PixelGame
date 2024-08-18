@@ -18,9 +18,15 @@ constexpr double RAYCAST_DELTA = 0.01;
 
 constexpr size_t FPS_MAX = 200;
 
+#ifdef __EMSCRIPTEN__
+const std::string TEXTURES_PATH = "/assets/textures.gif";
+const std::string FONT_PATH = "/assets/RubikLines-Regular.ttf";
+const std::string MAP_1_PATH = "/assets/map1";
+#else
 const std::string TEXTURES_PATH = "../assets/textures.gif";
 const std::string FONT_PATH = "../assets/RubikLines-Regular.ttf";
 const std::string MAP_1_PATH = "../assets/map1";
+#endif
 
 constexpr double INF = std::numeric_limits<double>::infinity();
 constexpr double EPS = 1e-6;

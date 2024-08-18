@@ -19,12 +19,34 @@ Run the following commands in the terminal to build this project:
 ```
 git clone https://github.com/BattleMage0231/PixelGame.git
 cd PixelGame
+git submodule update --init --recursive
 mkdir build && cd build
 cmake ..
 make
 ```
 
 The executable will then be built at `./game`.
+
+# Build with Emscripten
+
+Run the following command to build with Emscripten:
+
+```
+emcc ./src/*.cc \
+    -o build/game.html \
+    -I./include \
+    -I/usr/local/include \
+    -s USE_SDL=2 \
+    -s USE_SDL_IMAGE=2 \
+    -s SDL2_IMAGE_FORMATS='["gif"]' \
+    -s USE_SDL_TTF=2 \
+    -s USE_GLFW=3 \
+    --embed-file assets@/assets \
+    -s ALLOW_MEMORY_GROWTH=1 \
+    -s WASM=1 \
+    -O3 \
+    -std=c++17
+```
 
 # Gallery
 

@@ -7,16 +7,26 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 #include "data.h"
 #include "enemy.h"
 #include "game.h"
 #include "static.h"
+
+Game* Game::game = nullptr;
+size_t Game::timer = 0;
+double Game::FPS = 0.0;
 
 Game::Game() {}
 
 Game::~Game() {}
 
 void Game::setup() {
+    isOver = false;
+    game = this;
     SDL_CreateWindowAndRenderer(WIN_WIDTH, WIN_HEIGHT, 0, &window, &renderer);
     textures = IMG_LoadTexture(renderer, TEXTURES_PATH.c_str());
     if(!textures) {
@@ -34,6 +44,8 @@ void Game::setup() {
 }
 
 void Game::cleanup() {
+    isOver = true;
+    game = nullptr;
     SDL_DestroyRenderer(renderer);
     renderer = nullptr;
     SDL_DestroyWindow(window);
@@ -336,53 +348,65 @@ void Game::useItem() {
     }
 }
 
+void Game::mainLoop() {
+    if(game->player->health <= 0) {
+        game->cleanup();
+#ifdef __EMSCRIPTEN__
+        emscripten_cancel_main_loop();
+#endif
+        return;
+    }
+
+    // handle events
+    SDL_Event event;
+    while(SDL_PollEvent(&event)) {
+        if(event.type == SDL_QUIT) {
+            game->cleanup();
+#ifdef __EMSCRIPTEN__
+            emscripten_cancel_main_loop();
+#endif
+            return;
+        } else {
+            game->handleEvent(event);
+        }
+    }
+
+    size_t newTime = SDL_GetTicks();
+    size_t deltaTime = newTime - timer;
+
+    game->player->update(deltaTime);
+    for(auto actor : game->actors) {
+        actor->update(deltaTime);
+    }
+    FPS = (FPS * 0.8) + (1000.0 / deltaTime * 0.2);
+    timer = newTime;
+
+    game->populateZBuffer();
+
+    SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(game->renderer);
+    
+    game->renderMap();
+    game->renderActors();
+    game->renderPlayer();
+
+    game->renderDebug(FPS);
+
+    SDL_RenderPresent(game->renderer);
+}
+
 void Game::launch() {
     setup();
     loadMap1();
 
-    size_t timer = SDL_GetTicks();
-    double FPS = 0.0;
+    timer = SDL_GetTicks();
+    FPS = 0.0;
 
-    // game loop
-    while(player->health > 0) {
-        // handle events
-        bool exit = false;
-        SDL_Event event;
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) {
-                exit = true;
-                break;
-            } else {
-                handleEvent(event);
-            }
-        }
-        if(exit) {
-            break;
-        }
-
-        size_t newTime = SDL_GetTicks();
-        size_t deltaTime = newTime - timer;
-
-        player->update(deltaTime);
-        for(auto actor : actors) {
-            actor->update(deltaTime);
-        }
-        FPS = (FPS * 0.8) + (1000.0 / deltaTime * 0.2);
-        timer = newTime;
-
-        populateZBuffer();
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        
-        renderMap();
-        renderActors();
-        renderPlayer();
-
-        //renderDebug(FPS);
-
-        SDL_RenderPresent(renderer);
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainLoop, 0, 1);
+#else
+    while(!isOver) {
+        mainLoop();
     }
-
-    cleanup();
+#endif
 }

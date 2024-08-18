@@ -24,6 +24,8 @@ class Game {
     std::vector<double> ZBuffer;
     std::vector<double> rayBuffer;
 
+    bool isOver;
+
     void setup();
     void cleanup();
 
@@ -43,6 +45,10 @@ class Game {
 
     void useItem();
 
+    static void mainLoop();
+    static Game *game;
+    static size_t timer;
+    static double FPS;
 public:
     Game();
     ~Game();
