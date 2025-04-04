@@ -18,7 +18,11 @@ glm::dvec2 EnemyActor::pathfind() {
     }
     size_t width = map.getWidth();
     size_t height = map.getHeight();
-    bool visited[width][height];
+    bool** visited = new bool*[width];
+    for(size_t i = 0; i < width; ++i) {
+        visited[i] = new bool[height];
+        for(size_t j = 0; j < height; ++j) visited[i][j] = false;
+    }
     visited[static_cast<int>(pos.x)][static_cast<int>(pos.y)] = true;
     std::queue<std::pair<glm::dvec2, glm::dvec2>> toVisit;
     for(glm::dvec2 delta : POS_DELTA) {
@@ -33,6 +37,8 @@ glm::dvec2 EnemyActor::pathfind() {
         glm::dvec2 pos = entry.second;
         toVisit.pop();
         if(glm::length(pos - player->pos) < ENEMY_CLOSE_DIST) {
+            for(size_t i = 0; i < width; ++i) delete [] visited[i];
+            delete [] visited;
             return entry.first;
         }
         for(glm::dvec2 delta : POS_DELTA) {
@@ -45,6 +51,8 @@ glm::dvec2 EnemyActor::pathfind() {
             }
         }
     }
+    for(size_t i = 0; i < width; ++i) delete [] visited[i];
+    delete [] visited;
     return glm::dvec2(0.0, 0.0);
 }
 

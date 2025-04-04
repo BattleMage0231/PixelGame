@@ -390,7 +390,7 @@ void Game::mainLoop() {
     game->renderActors();
     game->renderPlayer();
 
-    game->renderDebug(FPS);
+    //game->renderDebug(FPS);
 
     SDL_RenderPresent(game->renderer);
 }
